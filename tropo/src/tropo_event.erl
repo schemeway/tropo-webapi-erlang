@@ -16,6 +16,7 @@
          delete_handler/2,
          session_created/1,
          session_deleted/1,
+         event/2,
          error/2,
          info/2]).
 
@@ -65,6 +66,9 @@ session_created(Id) ->
 session_deleted(Id) ->
     gen_event:notify(?SERVER, {delete, Id}).
 
+event(Id, Event) ->
+    gen_event:notify(?SERVER, {event, Id, Event}).
+
 error(Pattern, Args) ->
     gen_event:notify(?SERVER, {error, Pattern, Args}).
 
@@ -103,6 +107,9 @@ handle_event({error, Pattern, Args}, State) ->
     {ok, State};
 handle_event({info, Pattern, Args}, State) ->
     out_msg(State, debug, Pattern, Args),
+    {ok, State};
+handle_event({event, SessionId, Event}, State) ->
+    out_msg(State, debug, "[~s] Event: ~p", [SessionId, Event]),
     {ok, State};
 handle_event(_Event, State) ->
     {ok, State}.
