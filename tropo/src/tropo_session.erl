@@ -82,8 +82,10 @@ handle_call({handle_result, Path, Result}, _From, State) ->
     Module = State#state.module,
     Tropo = tropo_request:new(State#state.session, Result),
     case Module:handle_result(Tropo, Path, State#state.app_state) of
-        {ok, Actions, NewState} ->
+        {actions, Actions, NewState} ->
             {reply, {ok, Actions}, State#state{app_state = NewState}, ?DEFAULT_TIMEOUT};
+        {actions, Actions, NewState, Timeout} ->
+            {reply, {ok, Actions}, State#state{app_state = NewState}, Timeout};
         {stop, Actions} ->
             {stop, normal, {stop, Actions}, State};
         {error, Reason} ->
