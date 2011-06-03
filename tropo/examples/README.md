@@ -23,13 +23,15 @@ Erlang prompt:
 and then in another shell, test your application using curl:
 
     % curl -X POST http://localhost:8000/helloworld/start.json -d '{"session":{"id":"test"}}'
-    {"tropo":[{"say":{"value":"Hello, world!"}},{"hangup":null}]}
+    {"tropo":[{"say":{"value":"Hello, world!"}},{"on":{"event":"error","next":"hangup.json"}},{"on":{"event":"hangup","next":"hangup.json"}},{"on":{"event":"continue","next":"hangup.json"}}]}
+    % curl -X POST http://localhost:8000/helloworld/hangup.json -d '{"result":{"sessionId":"test"}}'
+    {"tropo":[{"hangup":null}]}
 
 At the Erlang shell, you should see logging information like
 
-    [INFO] [2011/05/28 21:22:04] Session created: <<"test">>
-    [INFO] [2011/05/28 21:22:04] Session deleted: <<"test">>
+    [INFO] [2011/06/03 11:15:05] Session created: <<"test">>
+    [DEBUG] [2011/06/03 11:15:05] [test] Event: {state,<<"answered">>}
+    [DEBUG] [2011/06/03 11:15:06] [test] Event: {state,<<"hangup">>}
+    [INFO] [2011/06/03 11:15:06] Session deleted: <<"test">>
 
-
-      
  
